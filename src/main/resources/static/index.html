@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShoppingFlow | E-Commerce Hub</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- ======================================================================
+       Navigation Bar
+       ====================================================================== -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="javascript:void(0)" onclick="showSection('store')" class="brand-logo">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <span>ShoppingFlow</span>
+      </a>
+
+      <div class="nav-search">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" class="search-input"
+          placeholder="Search 14+ products by name, specs, or category...">
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-btn" onclick="openApiDocsModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          API Docs
+        </button>
+
+        <button id="adminTabBtn" class="nav-btn" style="display:none;" onclick="showSection('admin')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Admin Portal
+        </button>
+
+        <!-- Customer Menu (Shown when logged in) -->
+        <div id="userMenu" style="display:none; align-items:center; gap:0.5rem;">
+          <button class="nav-btn" onclick="openOrdersModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+              </path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            My Orders
+          </button>
+          <div style="font-size:0.85rem; color:var(--text-secondary); margin: 0 0.25rem;">
+            Hi, <strong id="userGreeting" style="color:var(--text-primary);">User</strong>
+          </div>
+          <button class="nav-btn" style="color:var(--text-muted); font-size:0.8rem;" onclick="logout()">
+            Sign Out
+          </button>
+        </div>
+
+        <!-- Auth Button (Shown when logged out) -->
+        <button id="authBtn" class="nav-btn btn-primary" onclick="openAuthModal('login')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Sign In
+        </button>
+
+        <!-- Cart Button -->
+        <button class="nav-btn cart-btn" onclick="toggleCartDrawer()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span>Cart</span>
+          <span id="cartBadge" class="cart-badge" style="display:none;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       STOREFRONT SECTION
+       ====================================================================== -->
+  <main id="storeSection">
+    <!-- Hero Banner -->
+    <section class="hero">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1>Next-Gen Shopping.<br><span class="gradient-text">Engineered for Speed.</span></h1>
+          <p>
+            Experience lightning-fast product discovery, real-time inventory synchronization, and frictionless checkout
+            powered by Spring Boot 3 &amp; MySQL.
+          </p>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <button class="nav-btn btn-primary" style="padding: 0.75rem 1.5rem; font-size:0.95rem;"
+              onclick="document.getElementById('catalogHeading').scrollIntoView({behavior:'smooth'})">
+              Explore Collection
+            </button>
+            <button class="nav-btn"
+              style="background:var(--bg-card); border:1px solid var(--border-color); padding: 0.75rem 1.5rem; font-size:0.95rem;"
+              onclick="openAuthModal('login'); quickFillDemo('customer');">
+              Try Customer Demo
+            </button>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h3>20+</h3>
+              <p>RESTful APIs</p>
+            </div>
+            <div class="stat-item">
+              <h3>35%</h3>
+              <p>Faster Search</p>
+            </div>
+            <div class="stat-item">
+              <h3>500+</h3>
+              <p>Concurrent Users</p>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80"
+              alt="Featured Headphones">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Catalog & Filters -->
+    <div class="main-container">
+      <div class="controls-bar">
+        <div>
+          <h2 id="catalogHeading" style="font-size:1.5rem; font-weight:700; margin-bottom:0.25rem;">Curated Catalog</h2>
+          <p style="font-size:0.875rem; color:var(--text-secondary);">Premium electronics, audio, apparel, and lifestyle
+            essentials.</p>
+        </div>
+        <div class="filter-sort-controls">
+          <select id="sortSelect" class="custom-select">
+            <option value="default">Sort: Featured First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div id="categoryPills" class="category-pills" style="margin-bottom: 2rem;">
+        <!-- Injected via app.js -->
+      </div>
+
+      <!-- Product Grid -->
+      <div id="productsGrid" class="products-grid">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       ADMIN PORTAL SECTION
+       ====================================================================== -->
+  <main id="adminSection" class="main-container" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-size: 1.85rem; font-weight:800; letter-spacing:-0.02em;">Admin Dashboard</h1>
+        <p style="color:var(--text-secondary); font-size:0.9rem;">Real-time platform performance, order processing &amp;
+          catalog management.</p>
+      </div>
+      <div style="display:flex; gap:0.75rem;">
+        <button class="nav-btn btn-primary" onclick="openAddProductModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Product
+        </button>
+        <button class="nav-btn" style="background:var(--bg-card); border:1px solid var(--border-color);"
+          onclick="showSection('store')">
+          Exit to Store
+        </button>
+      </div>
+    </div>
+
+    <!-- Metrics KPI Cards -->
+    <div class="admin-metrics-grid">
+      <div class="metric-card">
+        <div class="metric-card-title">Total Revenue</div>
+        <div id="adminMetricRevenue" class="metric-card-value" style="color:var(--success);">$0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Total Orders</div>
+        <div id="adminMetricOrders" class="metric-card-value">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Catalog Products</div>
+        <div id="adminMetricProducts" class="metric-card-value">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Active Customers</div>
+        <div id="adminMetricCustomers" class="metric-card-value">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Low Stock Alerts (&lt;10)</div>
+        <div id="adminMetricLowStock" class="metric-card-value" style="color:var(--warning);">0</div>
+      </div>
+    </div>
+
+    <!-- Orders Management -->
+    <div
+      style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:2rem;">
+      <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1rem;">Customer Orders Management</h3>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Total Amount</th>
+              <th>Delivery Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="adminOrdersTableBody">
+            <!-- Injected via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Catalog Management -->
+    <div
+      style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem;">
+      <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1rem;">Product Inventory Management</h3>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminProductsTableBody">
+            <!-- Injected via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       Slide-Over Shopping Cart Drawer
+       ====================================================================== -->
+  <div id="cartDrawerBackdrop" class="drawer-backdrop" onclick="if(event.target === this) toggleCartDrawer()">
+    <div class="cart-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          Shopping Bag
+        </div>
+        <button class="btn-close" onclick="toggleCartDrawer()">&times;</button>
+      </div>
+
+      <div id="cartItemsList" class="cart-items-list">
+        <!-- Injected via app.js -->
+      </div>
+
+      <div class="drawer-footer">
+        <div class="drawer-summary-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">$0.00</span>
+        </div>
+        <div class="drawer-summary-row">
+          <span>Shipping (Orders &ge; $50 ship free)</span>
+          <span id="cartShipping">$0.00</span>
+        </div>
+        <div class="drawer-summary-row">
+          <span>Estimated Sales Tax (8%)</span>
+          <span id="cartTax">$0.00</span>
+        </div>
+        <div class="drawer-total-row">
+          <span>Estimated Total</span>
+          <span id="cartTotal" style="color:var(--primary);">$0.00</span>
+        </div>
+        <button id="cartCheckoutBtn" class="btn-checkout" onclick="openCheckoutModal()">
+          Proceed to Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       Authentication Modal (Login / Register)
+       ====================================================================== -->
+  <div id="authModal" class="modal-backdrop" onclick="if(event.target === this) closeAuthModal()">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div style="display:flex; gap:1rem;">
+          <button id="tabLogin" class="nav-btn active" style="font-weight:700; font-size:1.05rem;"
+            onclick="switchAuthTab('login')">Sign In</button>
+          <button id="tabRegister" class="nav-btn" style="font-weight:700; font-size:1.05rem;"
+            onclick="switchAuthTab('register')">Register</button>
+        </div>
+        <button class="btn-close" onclick="closeAuthModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 1-Click Quick Demo Login -->
+        <div class="demo-credentials-box">
+          <strong style="color:#c7d2fe;">One-Click Demo Fill:</strong>
+          <div class="demo-btn-group">
+            <button class="demo-btn" onclick="quickFillDemo('customer')">Customer: customer@store.com</button>
+            <button class="demo-btn" onclick="quickFillDemo('admin')">Admin: admin@store.com</button>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn-checkout" style="margin-top:1rem;">Sign In to Account</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" onsubmit="handleRegister(event)" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="regName" class="form-control" required placeholder="Jane Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="regEmail" class="form-control" required placeholder="jane@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password (Min 6 chars)</label>
+            <input type="password" id="regPassword" class="form-control" required minlength="6" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" id="regPhone" class="form-control" placeholder="+1-555-0123">
+          </div>
+          <button type="submit" class="btn-checkout" style="margin-top:1rem;">Create Customer Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       Product Quick View Modal
+       ====================================================================== -->
+  <div id="productModal" class="modal-backdrop" onclick="if(event.target === this) closeProductModal()">
+    <div class="modal-dialog" style="max-width:680px;">
+      <div class="modal-header">
+        <span style="font-weight:600; font-size:0.95rem; color:var(--text-secondary);">Product Overview</span>
+        <button class="btn-close" onclick="closeProductModal()">&times;</button>
+      </div>
+      <div id="productModalContent" class="modal-body">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       Checkout Modal
+       ====================================================================== -->
+  <div id="checkoutModal" class="modal-backdrop" onclick="if(event.target === this) closeCheckoutModal()">
+    <div class="modal-dialog" style="max-width:580px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">Secure Checkout</h3>
+        <button class="btn-close" onclick="closeCheckoutModal()">&times;</button>
+      </div>
+      <form onsubmit="handleCheckout(event)" class="modal-body">
+        <h4
+          style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); margin-bottom:1rem;">
+          1. Shipping Information</h4>
+        <div class="form-group">
+          <label class="form-label">Street Address</label>
+          <input type="text" id="chkStreet" class="form-control" required placeholder="742 Evergreen Terrace">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" id="chkCity" class="form-control" required placeholder="Springfield">
+          </div>
+          <div class="form-group">
+            <label class="form-label">State / Province</label>
+            <input type="text" id="chkState" class="form-control" required placeholder="OR">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Postal / Zip Code</label>
+            <input type="text" id="chkZip" class="form-control" required placeholder="97477">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input type="text" id="chkCountry" class="form-control" required value="United States">
+          </div>
+        </div>
+
+        <h4
+          style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); margin:1.25rem 0 0.75rem;">
+          2. Payment Method</h4>
+        <div class="form-group">
+          <select id="chkPaymentMethod" class="custom-select" style="width:100%; padding:0.65rem 0.95rem;">
+            <option value="CREDIT_CARD">Credit / Debit Card (Simulated)</option>
+            <option value="UPI">UPI Instant Pay</option>
+            <option value="NET_BANKING">Net Banking</option>
+            <option value="COD">Cash on Delivery</option>
+          </select>
+        </div>
+
+        <!-- Summary -->
+        <div
+          style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; margin:1.25rem 0;">
+          <div class="drawer-summary-row"><span>Subtotal:</span><span id="checkoutSubtotal">$0.00</span></div>
+          <div class="drawer-summary-row"><span>Shipping:</span><span id="checkoutShipping">$0.00</span></div>
+          <div class="drawer-summary-row"><span>Tax (8%):</span><span id="checkoutTax">$0.00</span></div>
+          <div class="drawer-total-row" style="margin-bottom:0;"><span>Grand Total:</span><span id="checkoutTotal"
+              style="color:var(--primary);">$0.00</span></div>
+        </div>
+
+        <button type="submit" class="btn-checkout">Complete Order &amp; Pay</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       Orders History Modal
+       ====================================================================== -->
+  <div id="ordersModal" class="modal-backdrop" onclick="if(event.target === this) closeOrdersModal()">
+    <div class="modal-dialog" style="max-width:640px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">Purchase History &amp; Tracking</h3>
+        <button class="btn-close" onclick="closeOrdersModal()">&times;</button>
+      </div>
+      <div id="ordersListContainer" class="modal-body">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       Add Product Modal (Admin)
+       ====================================================================== -->
+  <div id="addProductModal" class="modal-backdrop" onclick="if(event.target === this) closeAddProductModal()">
+    <div class="modal-dialog" style="max-width:560px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">Add New Catalog Product</h3>
+        <button class="btn-close" onclick="closeAddProductModal()">&times;</button>
+      </div>
+      <form onsubmit="handleAddProduct(event)" class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Product Name</label>
+          <input type="text" id="newProdName" class="form-control" required placeholder="e.g. Ultra Ergonomic Mouse">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="newProdCategory" class="custom-select" style="width:100%; padding:0.65rem 0.95rem;"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price ($)</label>
+            <input type="number" step="0.01" id="newProdPrice" class="form-control" required placeholder="99.99">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Initial Stock</label>
+            <input type="number" id="newProdStock" class="form-control" required value="25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SKU</label>
+            <input type="text" id="newProdSku" class="form-control" placeholder="e.g. ACC-MOU-001">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image URL</label>
+          <input type="url" id="newProdImage" class="form-control" required
+            placeholder="https://images.unsplash.com/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="newProdDesc" class="form-control" rows="3"
+            placeholder="Full product details, specifications and features..."></textarea>
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+          <input type="checkbox" id="newProdFeatured" style="width:16px; height:16px;">
+          <label for="newProdFeatured" class="form-label" style="margin-bottom:0; cursor:pointer;">Mark as Featured
+            Product</label>
+        </div>
+        <button type="submit" class="btn-checkout" style="margin-top:0.75rem;">Publish Product to Catalog</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       Interactive API Docs Modal
+       ====================================================================== -->
+  <div id="apiDocsModal" class="modal-backdrop" onclick="if(event.target === this) closeApiDocsModal()">
+    <div class="modal-dialog" style="max-width:760px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">RESTful API Specification</h3>
+        <button class="btn-close" onclick="closeApiDocsModal()">&times;</button>
+      </div>
+      <div id="apiDocsContainer" class="modal-body">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- App Script -->
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

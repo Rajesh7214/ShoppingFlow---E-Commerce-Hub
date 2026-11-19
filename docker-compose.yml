@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  ecommerce-mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ecommerce_db
+      MYSQL_USER: ecommerce_user
+      MYSQL_PASSWORD: ecommerce_pass
+      MYSQL_ROOT_PASSWORD: root_secure_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secure_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecommerce-net
+
+  # Spring Boot Backend & Static Web Application
+  ecommerce-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-spring-app
+    restart: always
+    depends_on:
+      ecommerce-mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      DB_HOST: ecommerce-mysql
+      DB_PORT: 3306
+      DB_NAME: ecommerce_db
+      DB_USER: ecommerce_user
+      DB_PASSWORD: ecommerce_pass
+      APP_JWT_SECRET: ProductionGradeEcommerceSecretKeyHmacSha256SignatureValue32CharsLong!
+    ports:
+      - "8080:8080"
+    networks:
+      - ecommerce-net
+
+  # Lightweight Web-based Database Explorer
+  adminer:
+    image: adminer:latest
+    container_name: ecommerce-adminer
+    restart: always
+    ports:
+      - "8088:8080"
+    networks:
+      - ecommerce-net
+
+networks:
+  ecommerce-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
